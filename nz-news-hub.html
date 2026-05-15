@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新西兰资讯中心 · NZ News Hub</title>
+<meta name="description" content="实时更新的新西兰中文资讯聚合平台，覆盖热点、时政、商业、金融、房产、生活六大板块">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & ROOT ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --nz-green: #1a5c2e;
+  --nz-accent: #2d8a4e;
+  --nz-accent-dark: #1e6638;
+  --nz-black: #111613;
+  --nz-white: #f7f5f0;
+  --nz-gold: #c8a84b;
+  --nz-light: #eff0eb;
+  --card-bg: #ffffff;
+  --text-primary: #181a17;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --border: #e5e2db;
+  --border-strong: #c9c5bc;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.09);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --font-serif: 'Noto Serif SC', serif;
+  --font-sans: 'Noto Sans SC', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--nz-white);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-sans); cursor: pointer; border: none; outline: none; }
+img { display: block; max-width: 100%; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* ===== API KEY BANNER ===== */
+#apiSetup {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(17,22,19,0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.setup-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  max-width: 460px; width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+.setup-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.setup-logo-icon {
+  width: 44px; height: 44px; background: var(--nz-accent);
+  border-radius: var(--radius-sm); display: flex; align-items: center;
+  justify-content: center; font-family: var(--font-serif);
+  font-size: 20px; font-weight: 700; color: #fff;
+}
+.setup-logo-name { font-family: var(--font-serif); font-size: 20px; font-weight: 700; }
+.setup-logo-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+.setup-title { font-family: var(--font-serif); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.setup-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.7; }
+.setup-input {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font-sans);
+  color: var(--text-primary); background: var(--nz-light);
+  transition: border-color 0.2s; margin-bottom: 12px;
+}
+.setup-input:focus { border-color: var(--nz-accent); background: #fff; outline: none; }
+.setup-btn {
+  width: 100%; padding: 12px; background: var(--nz-accent); color: #fff;
+  border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  transition: background 0.2s; margin-bottom: 12px;
+}
+.setup-btn:hover { background: var(--nz-accent-dark); }
+.setup-note { font-size: 11px; color: var(--text-light); text-align: center; }
+.setup-note a { color: var(--nz-accent); text-decoration: underline; }
+#setupError { color: #dc2626; font-size: 12px; margin-bottom: 10px; display: none; }
+
+/* ===== HEADER ===== */
+.site-header {
+  background: var(--nz-black);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 32px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  max-width: 1200px; margin: 0 auto;
+}
+.logo { display: flex; align-items: center; gap: 13px; cursor: default; }
+.logo-icon {
+  width: 40px; height: 40px; background: var(--nz-accent);
+  border-radius: var(--radius-sm); display: flex; align-items: center;
+  justify-content: center; font-family: var(--font-serif);
+  font-size: 19px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.logo-name { font-family: var(--font-serif); font-size: 18px; font-weight: 700; color: #fff; }
+.logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 1.5px; margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 18px; }
+.live-badge { display: flex; align-items: center; gap: 7px; font-size: 12px; color: rgba(255,255,255,0.6); }
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
+  animation: livePulse 2s infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74,222,128,0); }
+}
+.date-badge { font-size: 12px; color: rgba(255,255,255,0.4); }
+.header-btns { display: flex; gap: 8px; }
+.btn-refresh, .btn-key {
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 500; transition: all 0.2s;
+}
+.btn-refresh { background: var(--nz-accent); color: #fff; }
+.btn-refresh:hover { background: var(--nz-accent-dark); }
+.btn-key { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+.btn-key:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* ===== NAV TABS ===== */
+.nav-wrap { max-width: 1200px; margin: 0 auto; }
+.nav-tabs {
+  display: flex; overflow-x: auto; padding: 0 32px;
+  scrollbar-width: none; gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  padding: 11px 20px; font-size: 13px; color: rgba(255,255,255,0.45);
+  cursor: pointer; white-space: nowrap; background: none; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s; font-weight: 400; letter-spacing: 0.2px;
+}
+.nav-tab:hover { color: rgba(255,255,255,0.8); }
+.nav-tab.active { color: #fff; border-bottom-color: var(--nz-accent); font-weight: 500; }
+
+/* ===== MAIN LAYOUT ===== */
+.main { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
+
+/* ===== PANELS ===== */
+.panel { display: none; animation: fadeIn 0.3s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== FILTER CHIPS ===== */
+.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.chip {
+  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); background: #fff; color: var(--text-muted);
+  cursor: pointer; transition: all 0.2s;
+}
+.chip:hover { border-color: var(--nz-accent); color: var(--nz-accent); }
+.chip.active { background: var(--nz-black); color: #fff; border-color: var(--nz-black); }
+
+/* ===== TOP GRID ===== */
+.top-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; margin-bottom: 28px; }
+@media(max-width: 900px) { .top-grid { grid-template-columns: 1fr; } }
+
+/* ===== FEATURED CARD ===== */
+.featured-card {
+  border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
+  min-height: 320px; position: relative; background: #0a1f10;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.featured-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.featured-bg {
+  width: 100%; height: 100%; position: absolute; inset: 0;
+  background: linear-gradient(135deg, #0a1f10 0%, #1a5c2e 45%, #0d3318 100%);
+}
+.featured-pattern {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.featured-emoji {
+  position: absolute; top: 20px; left: 20px;
+  font-size: 52px; opacity: 0.25; filter: grayscale(0.3);
+}
+.featured-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(5,15,8,0.95) 0%, rgba(5,15,8,0.6) 55%, transparent 100%);
+  padding: 28px 22px 22px;
+}
+.featured-tag {
+  display: inline-block; background: var(--nz-accent);
+  color: #fff; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 4px; margin-bottom: 10px; letter-spacing: 0.3px;
+}
+.featured-title {
+  font-family: var(--font-serif); font-size: 20px; color: #fff;
+  font-weight: 700; line-height: 1.4; margin-bottom: 10px;
+}
+.featured-summary { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 12px; }
+.featured-meta { font-size: 12px; color: rgba(255,255,255,0.4); display: flex; gap: 14px; }
+.featured-placeholder {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.featured-placeholder .ph-emoji { font-size: 52px; opacity: 0.2; }
+.featured-placeholder .ph-text { color: rgba(255,255,255,0.2); font-size: 13px; }
+.featured-placeholder .ph-btn {
+  margin-top: 8px; padding: 8px 20px; background: rgba(45,138,78,0.6);
+  color: rgba(255,255,255,0.8); border-radius: var(--radius-sm);
+  font-size: 12px; border: 1px solid rgba(45,138,78,0.5);
+}
+.featured-placeholder .ph-btn:hover { background: var(--nz-accent); color: #fff; }
+
+/* ===== SIDEBAR ===== */
+.sidebar { display: flex; flex-direction: column; gap: 10px; }
+.sidebar-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px 16px;
+  cursor: pointer; transition: all 0.2s;
+}
+.sidebar-card:hover { border-color: var(--nz-accent); box-shadow: var(--shadow-sm); transform: translateX(2px); }
+.sidebar-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; margin-bottom: 7px; letter-spacing: 0.4px;
+}
+.sidebar-title { font-size: 13px; font-weight: 500; line-height: 1.45; color: var(--text-primary); }
+.sidebar-meta { font-size: 11px; color: var(--text-light); margin-top: 7px; display: flex; gap: 10px; }
+
+/* ===== SECTION HEADER ===== */
+.section-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.section-hd-left { display: flex; align-items: center; gap: 10px; }
+.section-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--nz-accent); flex-shrink: 0; }
+.section-title { font-family: var(--font-serif); font-size: 17px; font-weight: 700; }
+.section-count { font-size: 12px; color: var(--text-light); background: var(--nz-light); padding: 2px 8px; border-radius: 10px; }
+
+/* ===== ARTICLES GRID ===== */
+.articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media(max-width: 900px) { .articles-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 600px) { .articles-grid { grid-template-columns: 1fr; } }
+
+.article-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+  transition: all 0.2s;
+}
+.article-card:hover { border-color: var(--nz-accent); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.article-thumb {
+  width: 100%; height: 120px; background: var(--nz-light);
+  display: flex; align-items: center; justify-content: center; font-size: 40px;
+  position: relative; overflow: hidden;
+}
+.article-thumb-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--nz-light) 0%, #e0ddd6 100%);
+}
+.article-thumb-emoji { position: relative; z-index: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+.article-body { padding: 14px 15px; }
+.article-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; letter-spacing: 0.3px;
+}
+.article-title { font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--text-primary); margin-bottom: 8px; }
+.article-summary { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+.article-meta { font-size: 11px; color: var(--text-light); display: flex; justify-content: space-between; }
+
+/* ===== TAG COLORS ===== */
+.tag-hot { background: #fef2f2; color: #991b1b; }
+.tag-politics { background: #eff6ff; color: #1e40af; }
+.tag-biz { background: #fff7ed; color: #9a3412; }
+.tag-fin { background: #f0fdf4; color: #166534; }
+.tag-prop { background: #faf5ff; color: #6b21a8; }
+.tag-life { background: #fdf4ff; color: #86198f; }
+
+/* ===== TICKER BAR ===== */
+.ticker-bar {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 12px 20px;
+  display: flex; gap: 0; overflow-x: auto; margin-bottom: 24px;
+  scrollbar-width: none;
+}
+.ticker-bar::-webkit-scrollbar { display: none; }
+.ticker-item {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 100px; padding: 0 16px; border-right: 1px solid var(--border);
+}
+.ticker-item:last-child { border-right: none; }
+.ticker-label { font-size: 10px; color: var(--text-light); font-weight: 600; letter-spacing: 0.5px; }
+.ticker-value { font-size: 16px; font-weight: 700; margin-top: 3px; }
+.ticker-change { font-size: 11px; margin-top: 2px; }
+.up { color: #16a34a; }
+.down { color: #dc2626; }
+.flat { color: var(--text-muted); }
+
+/* ===== ARTICLE DETAIL ===== */
+.detail-panel {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 32px 36px;
+  margin-bottom: 28px; display: none;
+  animation: fadeIn 0.3s ease;
+}
+.detail-panel.open { display: block; }
+.detail-back {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; color: var(--nz-accent); cursor: pointer;
+  margin-bottom: 22px; transition: gap 0.2s;
+}
+.detail-back:hover { gap: 10px; }
+.detail-category {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; margin-bottom: 14px; letter-spacing: 0.3px;
+}
+.detail-title {
+  font-family: var(--font-serif); font-size: 24px; font-weight: 700;
+  line-height: 1.4; margin-bottom: 14px; color: var(--text-primary);
+}
+.detail-meta {
+  font-size: 12px; color: var(--text-light); margin-bottom: 22px;
+  padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 20px; flex-wrap: wrap;
+}
+.detail-body { font-size: 15px; line-height: 1.9; color: #2d3320; }
+.detail-body p { margin-bottom: 16px; }
+.detail-body p:last-child { margin-bottom: 0; }
+.detail-loading {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 20px; color: var(--text-muted);
+}
+.detail-loading .spinner { margin-bottom: 14px; }
+
+/* ===== LOADING ===== */
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--nz-accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-block {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 20px; color: var(--text-muted); gap: 12px;
+}
+.loading-block span { font-size: 13px; }
+.featured-loading {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+}
+.featured-loading .spinner {
+  border-color: rgba(255,255,255,0.15);
+  border-top-color: rgba(255,255,255,0.7);
+}
+.featured-loading span { color: rgba(255,255,255,0.4); font-size: 12px; }
+
+/* ===== FOOTER ===== */
+.site-footer {
+  background: var(--nz-black); color: rgba(255,255,255,0.35);
+  text-align: center; padding: 22px 32px; font-size: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.site-footer span { color: var(--nz-accent); }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+  background: var(--nz-black); color: #fff; padding: 12px 18px;
+  border-radius: var(--radius-md); font-size: 13px;
+  box-shadow: var(--shadow-lg); transform: translateY(80px);
+  opacity: 0; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid #4ade80; }
+.toast.error { border-left: 3px solid #f87171; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width: 768px) {
+  .header-top { padding: 12px 16px; }
+  .nav-tabs { padding: 0 16px; }
+  .main { padding: 20px 16px 50px; }
+  .detail-panel { padding: 20px 18px; }
+  .date-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- API Key Setup Modal -->
+<div id="apiSetup">
+  <div class="setup-card">
+    <div class="setup-logo">
+      <div class="setup-logo-icon">纽</div>
+      <div>
+        <div class="setup-logo-name">新西兰资讯中心</div>
+        <div class="setup-logo-sub">NZ NEWS HUB</div>
+      </div>
+    </div>
+    <div class="setup-title">输入 Anthropic API Key 开始使用</div>
+    <div class="setup-desc">
+      本平台使用 Claude AI 实时生成新西兰资讯内容。请输入您的 Anthropic API Key 以启动平台。
+      Key 仅存储在本地浏览器中，不会上传任何服务器。
+    </div>
+    <div id="setupError">API Key 无效，请检查后重试</div>
+    <input class="setup-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." />
+    <button class="setup-btn" id="setupBtn" onclick="saveApiKey()">开始使用 →</button>
+    <div class="setup-note">
+      还没有 API Key？<a href="https://console.anthropic.com" target="_blank">前往 Anthropic Console 获取</a><br>
+      <span style="color:#dc2626">⚠ 请勿直接双击本地文件打开，需通过 https:// 网址访问才能正常使用</span>
+    </div>
+  </div>
+</div>
+
+<!-- Site Header -->
+<header class="site-header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">纽</div>
+      <div>
+        <div class="logo-name">新西兰资讯中心</div>
+        <div class="logo-sub">NZ NEWS HUB · REAL-TIME</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>实时资讯</div>
+      <div class="date-badge" id="dateBadge"></div>
+      <div class="header-btns">
+        <button class="btn-refresh" onclick="refreshCurrent()">↻ 刷新</button>
+        <button class="btn-key" onclick="resetApiKey()">🔑 Key</button>
+      </div>
+    </div>
+  </div>
+  <div class="nav-wrap">
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('hot',this)">🔥 热点资讯</button>
+      <button class="nav-tab" onclick="switchTab('politics',this)">🏛 时政新闻</button>
+      <button class="nav-tab" onclick="switchTab('business',this)">💼 商业板块</button>
+      <button class="nav-tab" onclick="switchTab('finance',this)">📈 金融板块</button>
+      <button class="nav-tab" onclick="switchTab('property',this)">🏠 房地产</button>
+      <button class="nav-tab" onclick="switchTab('life',this)">🌿 生活板块</button>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Detail Panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-back" onclick="closeDetail()">← 返回列表</div>
+    <div id="detailContent"></div>
+  </div>
+
+  <!-- HOT -->
+  <section class="panel active" id="panel-hot">
+    <div class="filter-chips">
+      <button class="chip active" onclick="chipSelect(this)">全部来源</button>
+      <button class="chip" onclick="chipSelect(this)">X (Twitter)</button>
+      <button class="chip" onclick="chipSelect(this)">Facebook</button>
+      <button class="chip" onclick="chipSelect(this)">Instagram</button>
+      <button class="chip" onclick="chipSelect(this)">NZ Herald</button>
+      <button class="chip" onclick="chipSelect(this)">Stuff.co.nz</button>
+      <button class="chip" onclick="chipSelect(this)">RNZ</button>
+    </div>
+    <div class="top-grid">
+      <div class="featured-card" id="featured-hot">
+        <div class="featured-bg"></div>
+        <div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">🔥</div>
+          <div class="ph-text">今日热点头条</div>
+          <button class="ph-btn" onclick="loadTab('hot')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-hot">
+        <div class="loading-block" style="padding:30px 10px">
+          <span style="color:var(--text-light);font-size:12px">点击「加载资讯」开始</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left">
+        <div class="section-dot"></div>
+        <div class="section-title">社交热点精选</div>
+      </div>
+      <div class="section-count" id="count-hot">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-hot">
+      <div style="grid-column:1/-1" class="loading-block">
+        <span>等待加载...</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- POLITICS -->
+  <section class="panel" id="panel-politics">
+    <div class="top-grid">
+      <div class="featured-card" id="featured-politics">
+        <div class="featured-bg"></div><div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">🏛</div>
+          <div class="ph-text">时政头条</div>
+          <button class="ph-btn" onclick="loadTab('politics')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-politics"></div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left"><div class="section-dot"></div><div class="section-title">政策动态</div></div>
+      <div class="section-count" id="count-politics">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-politics"></div>
+  </section>
+
+  <!-- BUSINESS -->
+  <section class="panel" id="panel-business">
+    <div class="filter-chips">
+      <button class="chip active" onclick="chipSelect(this)">全部行业</button>
+      <button class="chip" onclick="chipSelect(this)">移民</button>
+      <button class="chip" onclick="chipSelect(this)">教育</button>
+      <button class="chip" onclick="chipSelect(this)">农业</button>
+      <button class="chip" onclick="chipSelect(this)">零售</button>
+      <button class="chip" onclick="chipSelect(this)">汽车</button>
+      <button class="chip" onclick="chipSelect(this)">服务业</button>
+    </div>
+    <div class="top-grid">
+      <div class="featured-card" id="featured-business">
+        <div class="featured-bg"></div><div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">💼</div>
+          <div class="ph-text">商业头条</div>
+          <button class="ph-btn" onclick="loadTab('business')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-business"></div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left"><div class="section-dot"></div><div class="section-title">行业资讯</div></div>
+      <div class="section-count" id="count-business">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-business"></div>
+  </section>
+
+  <!-- FINANCE -->
+  <section class="panel" id="panel-finance">
+    <div class="ticker-bar" id="ticker">
+      <div class="ticker-item"><div class="ticker-label">NZD/USD</div><div class="ticker-value flat" id="t-nzdusd">--</div><div class="ticker-change flat" id="tc-nzdusd">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">NZX 50</div><div class="ticker-value flat" id="t-nzx50">--</div><div class="ticker-change flat" id="tc-nzx50">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">OCR 利率</div><div class="ticker-value flat" id="t-ocr">--</div><div class="ticker-change flat" id="tc-ocr">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">通胀率 CPI</div><div class="ticker-value flat" id="t-cpi">--</div><div class="ticker-change flat" id="tc-cpi">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">黄金 XAU/USD</div><div class="ticker-value flat" id="t-gold">--</div><div class="ticker-change flat" id="tc-gold">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">BTC/USD</div><div class="ticker-value flat" id="t-btc">--</div><div class="ticker-change flat" id="tc-btc">--</div></div>
+      <div class="ticker-item"><div class="ticker-label">S&P 500</div><div class="ticker-value flat" id="t-sp500">--</div><div class="ticker-change flat" id="tc-sp500">--</div></div>
+    </div>
+    <div class="top-grid">
+      <div class="featured-card" id="featured-finance">
+        <div class="featured-bg"></div><div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">📈</div>
+          <div class="ph-text">金融头条</div>
+          <button class="ph-btn" onclick="loadTab('finance')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-finance"></div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left"><div class="section-dot"></div><div class="section-title">市场动态</div></div>
+      <div class="section-count" id="count-finance">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-finance"></div>
+  </section>
+
+  <!-- PROPERTY -->
+  <section class="panel" id="panel-property">
+    <div class="top-grid">
+      <div class="featured-card" id="featured-property">
+        <div class="featured-bg"></div><div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">🏠</div>
+          <div class="ph-text">房产头条</div>
+          <button class="ph-btn" onclick="loadTab('property')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-property"></div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left"><div class="section-dot"></div><div class="section-title">市场报告</div></div>
+      <div class="section-count" id="count-property">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-property"></div>
+  </section>
+
+  <!-- LIFE -->
+  <section class="panel" id="panel-life">
+    <div class="filter-chips">
+      <button class="chip active" onclick="chipSelect(this)">全部</button>
+      <button class="chip" onclick="chipSelect(this)">美食</button>
+      <button class="chip" onclick="chipSelect(this)">烹饪</button>
+      <button class="chip" onclick="chipSelect(this)">旅游</button>
+      <button class="chip" onclick="chipSelect(this)">装修</button>
+      <button class="chip" onclick="chipSelect(this)">家居</button>
+    </div>
+    <div class="top-grid">
+      <div class="featured-card" id="featured-life">
+        <div class="featured-bg"></div><div class="featured-pattern"></div>
+        <div class="featured-placeholder">
+          <div class="ph-emoji">🌿</div>
+          <div class="ph-text">生活头条</div>
+          <button class="ph-btn" onclick="loadTab('life')">加载资讯</button>
+        </div>
+      </div>
+      <div class="sidebar" id="sidebar-life"></div>
+    </div>
+    <div class="section-hd">
+      <div class="section-hd-left"><div class="section-dot"></div><div class="section-title">生活精选</div></div>
+      <div class="section-count" id="count-life">0 条</div>
+    </div>
+    <div class="articles-grid" id="grid-life"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <span>新西兰资讯中心</span> · NZ News Hub · 由 Claude AI 实时驱动 · 内容仅供参考
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==================== CONFIG ==================== */
+const TODAY_STR = new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+document.getElementById('dateBadge').textContent = TODAY_STR;
+
+let API_KEY = localStorage.getItem('nz_hub_api_key') || '';
+let currentTab = 'hot';
+let loadedTabs = {};
+
+// Show/hide API setup
+if(API_KEY) document.getElementById('apiSetup').style.display = 'none';
+
+async function saveApiKey(){
+  const val = document.getElementById('apiKeyInput').value.trim();
+  const err = document.getElementById('setupError');
+  const btn = document.querySelector('.setup-btn');
+  if(!val || val.length < 20){
+    err.textContent = 'API Key 格式有误，请检查后重试';
+    err.style.display = 'block';
+    return;
+  }
+  btn.textContent = '验证中...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': val,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:10,
+        messages:[{role:'user',content:'hi'}]
+      })
+    });
+    if(res.status === 401){
+      err.textContent = 'API Key 无效，请检查是否复制完整';
+      err.style.display = 'block';
+      btn.textContent = '开始使用 →'; btn.disabled = false;
+      return;
+    }
+    if(!res.ok && res.status !== 200){
+      const isLocalFile = location.protocol === 'file:';
+      if(isLocalFile){
+        err.textContent = '⚠️ 请勿直接双击打开文件！请将此 HTML 上传到网站（如 Netlify/GitHub Pages）后通过 https:// 访问。';
+        err.style.display = 'block';
+        btn.textContent = '开始使用 →'; btn.disabled = false;
+        return;
+      }
+      err.textContent = `请求失败 (${res.status})，请稍后重试`;
+      err.style.display = 'block';
+      btn.textContent = '开始使用 →'; btn.disabled = false;
+      return;
+    }
+    API_KEY = val;
+    localStorage.setItem('nz_hub_api_key', val);
+    document.getElementById('apiSetup').style.display = 'none';
+    showToast('✓ API Key 验证成功，正在加载资讯', 'success');
+    loadTab('hot');
+  } catch(e) {
+    const isLocalFile = location.protocol === 'file:';
+    if(isLocalFile){
+      err.textContent = '⚠️ 无法从本地文件调用 API。请将 HTML 上传到 Netlify / GitHub Pages，通过 https:// 网址打开后使用。';
+    } else {
+      err.textContent = '网络错误：' + e.message;
+    }
+    err.style.display = 'block';
+    btn.textContent = '开始使用 →'; btn.disabled = false;
+  }
+}
+
+function resetApiKey(){
+  localStorage.removeItem('nz_hub_api_key');
+  API_KEY = '';
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('setupError').style.display = 'none';
+  document.getElementById('apiSetup').style.display = 'flex';
+}
+
+/* ==================== TAB CONFIG ==================== */
+const TABS = {
+  hot: {
+    label:'热点资讯', emoji:'🔥', tagClass:'tag-hot', tagText:'热点',
+    prompt:`你是新西兰中文资讯编辑。今天是${TODAY_STR}。为"热点资讯"板块生成真实感强的新西兰最新热门新闻。
+内容涵盖：X/Twitter热议话题、Facebook民间讨论、Instagram热点、突发新闻、本地民生、社会事件。
+返回JSON（只输出JSON，不含任何其他文字或markdown）：
+{"featured":{"title":"头条标题","summary":"2-3句新闻摘要","source":"NZ Herald","time":"2小时前","category":"热点"},"sidebar":[{"title":"标题1","source":"Stuff","time":"30分钟前","tag":"社会"},{"title":"标题2","source":"RNZ","time":"1小时前","tag":"热议"},{"title":"标题3","source":"X热点","time":"刚刚","tag":"热点"}],"articles":[{"title":"文章1","summary":"一句话摘要","source":"NZ Herald","time":"3小时前","icon":"📰"},{"title":"文章2","summary":"一句话摘要","source":"Stuff","time":"4小时前","icon":"🔥"},{"title":"文章3","summary":"一句话摘要","source":"Facebook","time":"2小时前","icon":"👥"},{"title":"文章4","summary":"一句话摘要","source":"Instagram","time":"1小时前","icon":"📱"},{"title":"文章5","summary":"一句话摘要","source":"RNZ","time":"5小时前","icon":"📻"},{"title":"文章6","summary":"一句话摘要","source":"X","time":"刚刚","icon":"🐦"}]}`
+  },
+  politics: {
+    label:'时政新闻', emoji:'🏛', tagClass:'tag-politics', tagText:'时政',
+    prompt:`你是新西兰政治时事编辑。今天是${TODAY_STR}。为"时政新闻"板块生成新西兰政府、议会、政策相关新闻。
+内容涵盖：政府政策、议会动态、移民政策、外交关系、政党新闻、法规解读、选举动态。
+返回JSON（只输出JSON，不含任何其他文字）：
+{"featured":{"title":"政治头条","summary":"2-3句摘要，结合新西兰政治现实","source":"RNZ","time":"3小时前","category":"时政"},"sidebar":[{"title":"政策标题1","source":"Beehive","time":"1小时前","tag":"政策"},{"title":"议会标题2","source":"RNZ","time":"2小时前","tag":"立法"},{"title":"外交标题3","source":"NZ Herald","time":"5小时前","tag":"外交"}],"articles":[{"title":"文章1","summary":"摘要","source":"RNZ","time":"2小时前","icon":"🏛"},{"title":"文章2","summary":"摘要","source":"Beehive","time":"3小时前","icon":"📜"},{"title":"文章3","summary":"摘要","source":"NZ Herald","time":"4小时前","icon":"🗳"},{"title":"文章4","summary":"摘要","source":"Stuff","time":"5小时前","icon":"⚖"},{"title":"文章5","summary":"摘要","source":"1News","time":"6小时前","icon":"🌏"},{"title":"文章6","summary":"摘要","source":"NZ Herald","time":"7小时前","icon":"📋"}]}`
+  },
+  business: {
+    label:'商业板块', emoji:'💼', tagClass:'tag-biz', tagText:'商业',
+    prompt:`你是新西兰商业资讯编辑。今天是${TODAY_STR}。为"商业板块"生成资讯，覆盖移民、服务业、教育、农业、零售、汽车等行业。
+返回JSON（只输出JSON，不含任何其他文字）：
+{"featured":{"title":"商业头条","summary":"2-3句摘要，反映真实的新西兰商业环境","source":"NZ Business","time":"2小时前","category":"商业"},"sidebar":[{"title":"移民/教育标题","source":"Immigration NZ","time":"1小时前","tag":"移民"},{"title":"农业标题","source":"Stuff","time":"3小时前","tag":"农业"},{"title":"零售/汽车标题","source":"NZ Herald","time":"4小时前","tag":"零售"}],"articles":[{"title":"文章1","summary":"摘要","source":"Federated Farmers","time":"2小时前","icon":"🌾"},{"title":"文章2","summary":"摘要","source":"Education NZ","time":"3小时前","icon":"🎓"},{"title":"文章3","summary":"摘要","source":"Drive","time":"4小时前","icon":"🚗"},{"title":"文章4","summary":"摘要","source":"Retail NZ","time":"5小时前","icon":"🛒"},{"title":"文章5","summary":"摘要","source":"Immigration NZ","time":"6小时前","icon":"✈"},{"title":"文章6","summary":"摘要","source":"NZ Herald","time":"7小时前","icon":"🏢"}]}`
+  },
+  finance: {
+    label:'金融板块', emoji:'📈', tagClass:'tag-fin', tagText:'金融',
+    prompt:`你是新西兰金融资讯编辑。今天是${TODAY_STR}。为"金融板块"生成资讯，包含全球金融和新西兰本地金融动态。
+同时提供近期参考数据（基于你的知识合理估算）。
+返回JSON（只输出JSON，不含任何其他文字）：
+{"ticker":{"nzdusd":"0.5923","nzdusd_chg":"+0.15%","nzx50":"12380","nzx50_chg":"+0.6%","ocr":"5.25%","ocr_chg":"持平","cpi":"3.3%","cpi_chg":"-0.1%","gold":"2380","gold_chg":"+0.8%","btc":"67500","btc_chg":"+2.3%","sp500":"5240","sp500_chg":"+0.4%"},"featured":{"title":"金融头条","summary":"2-3句摘要","source":"NZ Financial Review","time":"2小时前","category":"金融"},"sidebar":[{"title":"外汇标题","source":"XE","time":"1小时前","tag":"外汇"},{"title":"股市标题","source":"NZX","time":"2小时前","tag":"股市"},{"title":"央行标题","source":"RBNZ","time":"4小时前","tag":"央行"}],"articles":[{"title":"文章1","summary":"摘要","source":"RBNZ","time":"2小时前","icon":"💱"},{"title":"文章2","summary":"摘要","source":"NZX","time":"3小时前","icon":"📊"},{"title":"文章3","summary":"摘要","source":"Bloomberg","time":"4小时前","icon":"🏦"},{"title":"文章4","summary":"摘要","source":"Reuters","time":"5小时前","icon":"💹"},{"title":"文章5","summary":"摘要","source":"WSJ","time":"6小时前","icon":"🌐"},{"title":"文章6","summary":"摘要","source":"NZ Herald","time":"7小时前","icon":"📉"}]}`
+  },
+  property: {
+    label:'房地产', emoji:'🏠', tagClass:'tag-prop', tagText:'房产',
+    prompt:`你是新西兰房地产资讯编辑。今天是${TODAY_STR}。为"房地产板块"生成资讯，包含各地区房价、市场分析、租赁、开发动态。
+返回JSON（只输出JSON，不含任何其他文字）：
+{"featured":{"title":"房产头条","summary":"2-3句摘要，反映真实的新西兰房地产市场","source":"Realestate.co.nz","time":"3小时前","category":"房产"},"sidebar":[{"title":"奥克兰房价标题","source":"OneRoof","time":"1小时前","tag":"奥克兰"},{"title":"惠灵顿标题","source":"Stuff","time":"2小时前","tag":"惠灵顿"},{"title":"基督城标题","source":"NZ Herald","time":"4小时前","tag":"基督城"}],"articles":[{"title":"文章1","summary":"摘要","source":"OneRoof","time":"2小时前","icon":"🏘"},{"title":"文章2","summary":"摘要","source":"CoreLogic","time":"3小时前","icon":"📊"},{"title":"文章3","summary":"摘要","source":"REINZ","time":"4小时前","icon":"🔑"},{"title":"文章4","summary":"摘要","source":"Stuff","time":"5小时前","icon":"🏗"},{"title":"文章5","summary":"摘要","source":"Realestate.co.nz","time":"6小时前","icon":"📍"},{"title":"文章6","summary":"摘要","source":"NZ Herald","time":"7小时前","icon":"💰"}]}`
+  },
+  life: {
+    label:'生活板块', emoji:'🌿', tagClass:'tag-life', tagText:'生活',
+    prompt:`你是新西兰生活方式编辑。今天是${TODAY_STR}。为"生活板块"生成内容，覆盖美食、烹饪、旅游、装修、家居，贴近在新西兰生活的华人社区。
+返回JSON（只输出JSON，不含任何其他文字）：
+{"featured":{"title":"生活头条","summary":"2-3句摘要，实用有趣","source":"Cuisine","time":"4小时前","category":"生活"},"sidebar":[{"title":"美食标题","source":"Cuisine","time":"1小时前","tag":"美食"},{"title":"旅游标题","source":"Tourism NZ","time":"2小时前","tag":"旅游"},{"title":"家居标题","source":"Renovate","time":"3小时前","tag":"家居"}],"articles":[{"title":"文章1","summary":"摘要","source":"Cuisine","time":"2小时前","icon":"🍽"},{"title":"文章2","summary":"摘要","source":"Tourism NZ","time":"3小时前","icon":"✈"},{"title":"文章3","summary":"摘要","source":"Renovate","time":"4小时前","icon":"🏡"},{"title":"文章4","summary":"摘要","source":"Dish","time":"5小时前","icon":"🍷"},{"title":"文章5","summary":"摘要","source":"AA Travel","time":"6小时前","icon":"🗺"},{"title":"文章6","summary":"摘要","source":"Architecture NZ","time":"7小时前","icon":"🛋"}]}`
+  }
+};
+
+const TAG_MAP = {
+  '热点':'tag-hot','社会':'tag-hot','热议':'tag-hot',
+  '时政':'tag-politics','政策':'tag-politics','立法':'tag-politics','外交':'tag-politics',
+  '商业':'tag-biz','移民':'tag-biz','教育':'tag-biz','农业':'tag-biz','零售':'tag-biz',
+  '金融':'tag-fin','外汇':'tag-fin','股市':'tag-fin','央行':'tag-fin',
+  '房产':'tag-prop','奥克兰':'tag-prop','惠灵顿':'tag-prop','基督城':'tag-prop',
+  '生活':'tag-life','美食':'tag-life','旅游':'tag-life','家居':'tag-life'
+};
+function getTagCls(tag){ return TAG_MAP[tag] || 'tag-hot'; }
+
+/* ==================== API CALL ==================== */
+async function callAPI(prompt){
+  if(!API_KEY) throw new Error('No API Key');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    if(res.status===401) throw new Error('API Key 无效');
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const text = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+  const s = text.indexOf('{'), e = text.lastIndexOf('}');
+  if(s<0||e<0) throw new Error('JSON parse failed');
+  return JSON.parse(text.slice(s, e+1));
+}
+
+/* ==================== RENDER ==================== */
+function renderFeatured(tabId, item){
+  const el = document.getElementById('featured-'+tabId);
+  const cfg = TABS[tabId];
+  el.innerHTML = `
+    <div class="featured-bg"></div>
+    <div class="featured-pattern"></div>
+    <div class="featured-emoji">${cfg.emoji}</div>
+    <div class="featured-overlay">
+      <span class="featured-tag">${item.category || cfg.tagText}</span>
+      <div class="featured-title">${item.title}</div>
+      <div class="featured-summary">${item.summary || ''}</div>
+      <div class="featured-meta">
+        <span>📰 ${item.source || 'NZ资讯'}</span>
+        <span>🕐 ${item.time || '刚刚'}</span>
+      </div>
+    </div>`;
+  el.onclick = ()=> openDetail(tabId, item.title, item.summary||'', item.category||cfg.tagText, item.source, item.time, cfg.tagClass);
+  el.style.cursor = 'pointer';
+}
+
+function renderSidebar(tabId, items){
+  const el = document.getElementById('sidebar-'+tabId);
+  if(!items || !items.length){ el.innerHTML = ''; return; }
+  el.innerHTML = items.map(s=>`
+    <div class="sidebar-card" onclick="openDetail('${tabId}',${JSON.stringify(s.title)},'',${ JSON.stringify(s.tag||'')},${JSON.stringify(s.source||'')},${JSON.stringify(s.time||'')},'${getTagCls(s.tag)}')">
+      <span class="sidebar-tag ${getTagCls(s.tag)}">${s.tag || '资讯'}</span>
+      <div class="sidebar-title">${s.title}</div>
+      <div class="sidebar-meta"><span>${s.source||''}</span><span>${s.time||''}</span></div>
+    </div>`).join('');
+}
+
+function renderGrid(tabId, articles){
+  const el = document.getElementById('grid-'+tabId);
+  const cfg = TABS[tabId];
+  if(!articles||!articles.length){ el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)">暂无更多资讯</div>'; return; }
+  el.innerHTML = articles.map(a=>`
+    <div class="article-card" onclick="openDetail('${tabId}',${JSON.stringify(a.title)},${JSON.stringify(a.summary||'')},${JSON.stringify(cfg.tagText)},${JSON.stringify(a.source||'')},${JSON.stringify(a.time||'')},'${cfg.tagClass}')">
+      <div class="article-thumb">
+        <div class="article-thumb-bg"></div>
+        <span class="article-thumb-emoji">${a.icon||cfg.emoji}</span>
+      </div>
+      <div class="article-body">
+        <span class="article-tag ${cfg.tagClass}">${cfg.tagText}</span>
+        <div class="article-title">${a.title}</div>
+        <div class="article-summary">${a.summary||''}</div>
+        <div class="article-meta"><span>${a.source||''}</span><span>${a.time||''}</span></div>
+      </div>
+    </div>`).join('');
+  const cnt = document.getElementById('count-'+tabId);
+  if(cnt) cnt.textContent = articles.length + ' 条';
+}
+
+function renderTicker(ticker){
+  if(!ticker) return;
+  const map = [
+    ['nzdusd','t-nzdusd','tc-nzdusd','nzdusd_chg'],
+    ['nzx50','t-nzx50','tc-nzx50','nzx50_chg'],
+    ['ocr','t-ocr','tc-ocr','ocr_chg'],
+    ['cpi','t-cpi','tc-cpi','cpi_chg'],
+    ['gold','t-gold','tc-gold','gold_chg'],
+    ['btc','t-btc','tc-btc','btc_chg'],
+    ['sp500','t-sp500','tc-sp500','sp500_chg'],
+  ];
+  map.forEach(([key, vId, cId, chgKey])=>{
+    const v = document.getElementById(vId);
+    const c = document.getElementById(cId);
+    if(!v||!c) return;
+    const val = ticker[key] || '--';
+    const chg = ticker[chgKey] || '--';
+    v.textContent = val;
+    c.textContent = chg;
+    const isUp = chg.startsWith('+') && chg !== '+0%';
+    const isDown = chg.startsWith('-') && chg !== '-0%';
+    v.className = 'ticker-value ' + (isUp?'up':isDown?'down':'flat');
+    c.className = 'ticker-change ' + (isUp?'up':isDown?'down':'flat');
+  });
+}
+
+function setFeaturedLoading(tabId){
+  document.getElementById('featured-'+tabId).innerHTML = `
+    <div class="featured-bg"></div><div class="featured-pattern"></div>
+    <div class="featured-loading"><div class="spinner"></div><span>正在获取实时资讯...</span></div>`;
+}
+function setSidebarLoading(tabId){
+  document.getElementById('sidebar-'+tabId).innerHTML = `<div class="loading-block"><div class="spinner"></div><span>加载中...</span></div>`;
+}
+function setGridLoading(tabId){
+  document.getElementById('grid-'+tabId).innerHTML = `<div style="grid-column:1/-1" class="loading-block"><div class="spinner"></div><span>生成资讯内容中...</span></div>`;
+}
+function setError(tabId, msg){
+  document.getElementById('featured-'+tabId).innerHTML = `
+    <div class="featured-bg"></div><div class="featured-pattern"></div>
+    <div class="featured-placeholder">
+      <div class="ph-emoji" style="opacity:0.15">⚠️</div>
+      <div class="ph-text" style="color:rgba(255,255,255,0.35)">加载失败</div>
+      <button class="ph-btn" onclick="loadTab('${tabId}')">点击重试</button>
+    </div>`;
+  document.getElementById('sidebar-'+tabId).innerHTML = `<div class="loading-block"><span style="color:var(--text-light)">加载失败，请重试</span></div>`;
+  document.getElementById('grid-'+tabId).innerHTML = `<div style="grid-column:1/-1" class="loading-block"><span style="color:var(--text-light)">${msg}</span></div>`;
+}
+
+/* ==================== LOAD TAB ==================== */
+async function loadTab(tabId){
+  if(!API_KEY){ document.getElementById('apiSetup').style.display='flex'; return; }
+  loadedTabs[tabId] = false;
+  setFeaturedLoading(tabId);
+  setSidebarLoading(tabId);
+  setGridLoading(tabId);
+  try {
+    const data = await callAPI(TABS[tabId].prompt);
+    if(data.featured) renderFeatured(tabId, data.featured);
+    if(data.sidebar && data.sidebar.length) renderSidebar(tabId, data.sidebar);
+    if(data.articles && data.articles.length) renderGrid(tabId, data.articles);
+    if(data.ticker) renderTicker(data.ticker);
+    loadedTabs[tabId] = true;
+    showToast('✓ ' + TABS[tabId].label + ' 已更新', 'success');
+  } catch(e) {
+    if(e.message.includes('无效')) resetApiKey();
+    setError(tabId, e.message);
+    showToast('加载失败：' + e.message, 'error');
+  }
+}
+
+/* ==================== ARTICLE DETAIL ==================== */
+async function openDetail(tabId, title, summary, category, source, time, tagClass){
+  const panel = document.getElementById('detailPanel');
+  const content = document.getElementById('detailContent');
+  panel.classList.add('open');
+  window.scrollTo({top:0,behavior:'smooth'});
+  content.innerHTML = `<div class="detail-loading"><div class="spinner"></div><div style="margin-top:14px;font-size:13px;color:var(--text-muted)">正在生成完整报道...</div></div>`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:`你是新西兰中文资讯记者。请根据以下标题，撰写一篇约300-400字的深度报道，用专业、流畅的中文写作，贴近在新西兰生活的华人读者。文章分3-4段，内容丰富详实。只输出正文，不含标题。
+标题：${title}
+板块：${category}`}]
+      })
+    });
+    const d = await res.json();
+    const text = d.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    const paras = text.split(/\n\n|\n/).filter(p=>p.trim().length>10).map(p=>`<p>${p.trim()}</p>`).join('');
+    content.innerHTML = `
+      <span class="detail-category ${tagClass||'tag-hot'}">${category}</span>
+      <div class="detail-title">${title}</div>
+      <div class="detail-meta">
+        <span>📰 ${source||'NZ资讯中心'}</span>
+        <span>🕐 ${time||'刚刚'}</span>
+        <span>📅 ${TODAY_STR}</span>
+      </div>
+      <div class="detail-body">${paras||'<p>内容生成中，请稍后...</p>'}</div>`;
+  } catch(e) {
+    content.innerHTML = `<div class="detail-loading"><span>内容生成失败，请重试</span></div>`;
+  }
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+/* ==================== NAVIGATION ==================== */
+function switchTab(tabId, btn){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tabId).classList.add('active');
+  currentTab = tabId;
+  closeDetail();
+  if(!loadedTabs[tabId] && API_KEY) loadTab(tabId);
+}
+
+function refreshCurrent(){
+  loadedTabs[currentTab] = false;
+  loadTab(currentTab);
+}
+
+function chipSelect(el){
+  const parent = el.closest('.filter-chips');
+  parent.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ==================== TOAST ==================== */
+let toastTimer;
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 3000);
+}
+
+/* ==================== INIT ==================== */
+document.getElementById('apiKeyInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') saveApiKey();
+});
+</script>
+</body>
+</html>
